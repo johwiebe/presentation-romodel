@@ -1,0 +1,100 @@
+\begin{tikzpicture}
+    \definecolor{00BFC4}{RGB}{0,191,196}
+    \definecolor{C77CFF}{RGB}{199,124,255}
+    \definecolor{F8766D}{RGB}{248,118,109}
+    \definecolor{7CAE00}{RGB}{124,174,0}
+    \tikzstyle{document} = [rectangle, draw,
+                            fill=blue!30,
+                            text width=4.7em,
+                            text centered,
+                            node distance=0.65cm,]
+    \tikzstyle{block1} = [rectangle,
+                          draw,
+                          fill=00BFC4!30,
+                          text centered,
+                          rounded corners,
+                          node distance=0.4cm,
+                          minimum height=1.0em,
+                          text width=9.5em]
+    \tikzset{block/.style={trapezium,
+                         draw,
+                         trapezium stretches=true,
+                         fill=7CAE00!30,
+                         text centered,
+                         node distance=0.4cm,
+                         text width=7.5em,
+                         minimum height=1.2em}}
+    \tikzstyle{line} = [draw, -latex']
+    \tikzstyle{cloud} = [draw,
+                         ellipse,
+                         fill=F8766D!30,
+                         text centered,
+                         node distance=0.2cm,
+                         minimum height=1.8em]
+    \tikzstyle{ioi} = [trapezium,draw,trapezium right angle=120,
+                       rounded corners, fill=blue!60,
+                       minimum height=2.2em]
+    \tikzstyle{io} = [trapezium,draw,trapezium right angle=110,
+                      rounded corners,fill=red!20,
+                      minimum height=2.2em]   % the draw command here is used to draw the boundary of mentioned shape.  
+
+    \node [cloud] (init) {\scriptsize Robust model};
+    \node [block, right = 1cm of init, text width=9.5em](has_unc){\scriptsize Has uncertain constraint?};
+    % Polyhedral
+    \node [block, below = of init](is_poly){\scriptsize Is $\mathcal{U}$ polyhedral?};
+    \node [block1, right =1cm of is_poly](poly){\scriptsize Polyhedral transformation};
+    % Ellipsoidal
+    \node [block, below = of is_poly](is_ell){\scriptsize Is $\mathcal{U}$ ellipsoidal?};
+    \node [block1, right =1cm of is_ell](ell){\scriptsize Ellipsoidal transformation};
+    % Standard GP
+    \node [block, below = of is_ell](is_gp){\scriptsize Is $\mathcal{U}$ GP set?};
+    \node [block1, right =1cm of is_gp](gp){\scriptsize Standard GP transformation};
+    % Warped GP
+    \node [block, below = of is_gp](is_wgp){\scriptsize Warped GP set?};
+    \node [block1, right =1cm of is_wgp](wgp){\scriptsize Warped GP transformation};
+    % Other geometry
+    \node [block, below = of is_wgp](is_known){\scriptsize Other geometry?};
+    \node [block1, right =1.0cm of is_known](trans){\scriptsize Transformation};
+    % Cant solve
+    \node [cloud, below = 0.5cm of is_known](cant_solve){\scriptsize Can't solve};
+    \node [cloud,right = of has_unc,text width=4.80em,xshift=0.5cm] (counterpart) {\scriptsize Deterministic counterpart};
+    \node [block1,below =0.925cm of counterpart,text width=2cm] (solve) {\scriptsize Solve};
+    \node [below =-0.25cm of has_unc,xshift=1.8cm] (anchor_next) {};
+    \node [below =-0.25cm of has_unc,xshift=-2.0cm] (anchor_is) {};
+
+    % Arrows
+    \path [line] (init) -- (has_unc);
+    \path [line] (anchor_is) to [bend right=5] (is_poly.north)
+        node[label={\scriptsize yes},yshift=-0.2cm] {};
+    % Polyhedral
+    \draw [line] (is_poly) -- (is_ell) node[midway,label=right:{\scriptsize no}] {};
+    \path [line] (is_poly) -- (poly) node[midway,label=above:{\scriptsize yes},yshift=-0.2cm] {};
+    \draw [line] (poly.east) to [bend right=10] (anchor_next) {};
+    % Ellipsoidal
+    \draw [line] (is_ell) -- (ell) node[midway,label=above:{\scriptsize yes},yshift=-0.2cm] {};
+    \draw [line] (is_ell) -- (is_gp) node[midway,label=right:{\scriptsize no}] {};
+    \draw [line] (ell.east) to [bend right=15] (anchor_next) {};
+    % Standard GP
+    \path [line] (is_gp) -- (gp) node[midway,label=above:{\scriptsize yes},yshift=-0.2cm] {};
+    \draw [line] (is_gp) -- (is_wgp) node[midway,label=right:{\scriptsize no}] {};
+    \draw [line] (gp.east) to [bend right=20] (anchor_next) {};
+    % Warped GP
+    \path [line] (is_wgp) -- (wgp) node[midway,label=above:{\scriptsize yes},yshift=-0.2cm] {};
+    \draw [line,dotted] (is_wgp) -- (is_known) node[midway,label=right:{\scriptsize no}] {};
+    \draw [line] (wgp.east) to [bend right=25] (anchor_next) {};
+    % Extension
+    \path [line] (is_known) -- (trans) node[midway,label=above:{\scriptsize yes},yshift=-0.2cm] {};
+    \draw [line,dotted] (trans.east) to [bend right=30] (anchor_next);
+    % Final
+    \draw [line] (has_unc) -- (counterpart) node[midway,label=above:{\scriptsize no}] {};
+    \draw [line] (counterpart) -- (solve);
+    \path [line] (is_known) -- (cant_solve) node[midway,label=right:{\scriptsize no}] {};
+    % Extension box
+    \draw (2,-4.72) node [draw,
+                          dashed,
+                          minimum width=11cm,
+                          minimum height=0.7cm,
+                          fill=gray!50,
+                          label=right:{\scriptsize Possible extensions},
+                          opacity=0.3] {};
+\end{tikzpicture}

@@ -1,0 +1,23 @@
+\frametitle{Solvers}
+ROmodel includes three solvers:
+\begin{enumerate}
+    \item Robust reformulation:
+\begin{lstlisting}[language=Python]
+    solver = SolverFactory('romodel.reformulation')
+\end{lstlisting}
+    \item Cutting planes:
+\begin{lstlisting}[language=Python]
+    solver = SolverFactory('romodel.cuts')
+\end{lstlisting}
+    \item Nominal:
+\begin{lstlisting}[language=Python]
+    solver = SolverFactory('romodel.nominal')
+\end{lstlisting}
+\end{enumerate}
+\begin{lstlisting}[language=Python]
+    # Set master & sub solver
+    solver.options['solver'] = 'gurobi'
+    solver.options['subsolver'] = 'ipopt'
+    # Solve
+    solver.solve(m)
+\end{lstlisting}

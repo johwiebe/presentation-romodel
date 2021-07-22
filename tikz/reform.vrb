@@ -1,0 +1,17 @@
+\frametitle{Extending ROmodel: Gaussian process-based sets}
+Train (warped) Gaussian process with GPy:
+    \begin{lstlisting}[language=Python]
+    import GPy
+    # Set up kernel
+    kernel = GPy.kern.RBF(input_dim=1)
+    # Set up GP and train
+    gp = GPy.models.WarpedGP(x, y, kernel=kernel, warping_terms=3)
+    gp.optimize()
+    \end{lstlisting}
+    Use GPy model to construct uncertainty set:
+    \begin{lstlisting}[language=Python]
+    from romodel.uncset import WarpedGPSet
+    m.z = pe.Var(range(3), within=pe.NonNegativeReals)
+    # Set up GP-based uncertainty set
+    m.uncset = WarpedGPSet(gp, m.z, 0.95)
+    \end{lstlisting}

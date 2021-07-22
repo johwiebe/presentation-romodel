@@ -1,0 +1,70 @@
+% Metropolis theme with Imperial colors
+\useoutertheme[progressbar=foot]{metropolis}
+\useinnertheme{metropolis}
+\usefonttheme{metropolis}
+\usecolortheme{metropolis}
+\usecolortheme{imperial}
+% \usefonttheme[onlymath]{serif}
+\usepackage{listings}
+\usepackage{shellesc}
+
+% Math stuff
+\usepackage{bm}
+\usepackage{bbm}         % Blackboard fonts
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{commath}
+
+% Citations and references
+\usepackage{natbib}
+\usepackage{hyperref}
+%\usepackage[natbib, maxcitenames=3, mincitenames=1, style=apa]{biblatex}
+% Language and input
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+
+% tikz and pgfplots
+\usepackage{xcolor}
+\usepackage{pgfplots,tikz}
+\usetikzlibrary{shapes.geometric,arrows,positioning}
+\usetikzlibrary{external}
+\tikzexternalize[optimize=false,prefix=tikz/]
+
+\usepackage{graphicx}
+\usepackage{datetime}
+%\usepackage[T1]{fontenc}
+\usepackage{listings}
+% \usepackage{color}
+\usepackage{multirow,multicol,booktabs}
+\usepackage{makecell}
+\usepackage{adjustbox}
+\usepackage{tabto}
+
+% Algorithms
+\usepackage{algorithmic}
+\usepackage{algorithm}
+
+\newcommand{\isoSpacing}{\ \ \ \ \ \ \ \ \ \ }
+\setlength{\abovedisplayskip}{-5pt}
+\setlength{\belowdisplayskip}{-5pt}
+\setlength{\abovedisplayshortskip}{-5pt}
+\setlength{\belowdisplayshortskip}{-5pt}
+
+\setbeamertemplate{footline}
+  {
+    \leavevmode%
+    \hbox{%
+    \begin{beamercolorbox}[wd=.35\paperwidth,ht=2.25ex,dp=1ex,center]{author}%
+      \usebeamerfont{author in head/foot}\insertshortauthor
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.3\paperwidth,ht=2.25ex,dp=1ex,center]{title}%
+      \usebeamerfont{title in head/foot}\insertshorttitle
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.35\paperwidth,ht=2.25ex,dp=1ex,right]{date}%
+        \usebeamerfont{date in
+        head/foot}\insertshortinstitute\hspace*{3ex}\phantom{10}\makebox[0pt][r]{\insertframenumber{}} /
+    \insertmainframenumber\hspace*{1ex}
+    \end{beamercolorbox}}%
+    \vskip0pt%
+  }
+

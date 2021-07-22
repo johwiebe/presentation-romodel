@@ -1,0 +1,32 @@
+\tikzexternaldisable
+\begin{frame}[noframenumbering,plain]
+  \begin{tikzpicture}[overlay, remember picture]
+  \node[anchor=north west, %anchor is upper left corner of the graphic
+      xshift=7pt, %shifting around
+      yshift=-6pt]
+     at (current page.north west) %left upper corner of the page
+     {\includegraphics[width=0.29\textwidth]{img/logo_imperial.eps}};
+  \end{tikzpicture}
+  \begin{tikzpicture}[overlay, remember picture]
+  \node[anchor=north east, %anchor is upper left corner of the graphic
+      xshift=-220pt, %shifting around
+      yshift=-4pt]
+     at (current page.north east) %left upper corner of the page
+     {\includegraphics[width=0.23\textwidth]{img/logo_cog.png}};
+  \end{tikzpicture}
+  \begin{tikzpicture}[overlay, remember picture]
+  \node[anchor=north east, %anchor is upper left corner of the graphic
+      xshift=-113pt, %shifting around
+      yshift=-10pt]
+     at (current page.north east) %left upper corner of the page
+     {\includegraphics[width=0.23\textwidth]{img/logo_hipeds.pdf}};
+  \end{tikzpicture}
+  \begin{tikzpicture}[overlay, remember picture]
+  \node[anchor=north east, %anchor is upper left corner of the graphic
+  xshift=-4pt, %shifting around
+  yshift=-10pt]
+  at (current page.north east) %left upper corner of the page
+  {\includegraphics[width=0.23\textwidth]{img/logo_slb.eps}};
+  \end{tikzpicture}
+    \maketitle
+\end{frame}

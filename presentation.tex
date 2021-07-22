@@ -1,0 +1,479 @@
+\documentclass[slides,aspectratio=169]{beamer}
+% compile with lualatex --shell-escape presentation.tex
+
+\input{preamble.tex}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{python}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+
+\lstset{style=python}
+\input{commands}
+%\setsansfont[BoldFont={Fira Sans}, ItalicFont={Fira Sans Light Italic}]{Fira Sans Light}
+\title[ROmodel]{\vspace{5pt} ROmodel: Modeling robust optimization problems in
+Pyomo\vspace{-10pt}}
+
+% Ines and Ruth as co-authors
+    \author[J. Wiebe et al.]{Johannes Wiebe\inst{1}, Ruth Misener\inst{1}}
+\institute[Imperial College London]{
+    \vspace{10pt}
+    \inst{1} Department of Computing, Imperial College London, London, UK\\[2em]
+    \tiny
+    Funding: EP/L016796/1, EP/R511961/1 no. 17000145, and EP/P016871/1
+}
+
+\newdate{date}{07}{06}{2021}
+\date{\displaydate{date}}
+
+\begin{document}
+
+\input{titleframe}
+% DO NOT put this before the title frame
+\tikzexternalenable
+
+\begin{frame}{Robust optimization}
+Consider a generic robust optimization problem:
+\begin{subequations}
+    \begin{align}
+        \min\limits_{\x\in \mathcal{X} , \y(\xivec)}\max\limits_{\xivec \in \U(\x)}\quad & f(\x, \y(\xivec), \xivec)  \\[4pt]
+        \text{s.t} \quad & g(\x, \y(\xivec), \xivec) \leq 0 && \forall \xivec \in \U(\x)
+    \end{align}\label{eq:ro}
+\end{subequations}
+where $\x \in \R^n$ are "here and now" variables, $\y(\xivec)$ are adjustable variables,
+and the uncertain parameter vector $\xivec$ is bounded
+by the uncertainty set $\U(\x)$.
+
+\visible<2>{
+    \begin{exampleblock}{Solution approaches}
+        \begin{enumerate}
+            \item Robust reformulation: based on duality
+            \item Cutting planes: iterative approach
+        \end{enumerate}
+    \end{exampleblock}
+}
+
+\end{frame}
+
+\begin{frame}{Existing tools}
+    There are a number of existing tools for solving robust optimization
+    problems:
+    \begin{columns}
+        \begin{column}{0.465\textwidth}
+            \visible<2->{
+            \begin{block}{Solvers}
+                \vspace{1em}
+                \begin{minipage}[c][0.30\textheight][t]{\linewidth} 
+                Designed to \emph{solve} RO problems
+                \begin{itemize}
+                    \item ROME [1], RSOME [2]: Matlab
+                    \item PyROS [3]: Python/Pyomo
+                    \item ROC++ [4]: C++
+                \end{itemize}
+                \end{minipage}
+            \end{block}
+            }
+        \end{column}
+        \begin{column}{0.465\textwidth}
+            \visible<3->{
+            \begin{block}{Modeling languages}
+                \vspace{1em}
+                \begin{minipage}[c][0.30\textheight][t]{\linewidth} 
+                Designed for \emph{modeling} RO problems
+                    \begin{itemize}
+                        \item JumPeR [5]: Julia/JumP
+                        \item AIMMS
+                    \end{itemize}
+                \end{minipage}
+            \end{block}
+            }
+        \end{column}
+    \end{columns}
+    \visible<4->{
+    \begin{exampleblock}{ROmodel}
+        Focuses on modeling. ROmodel is open source, tightly
+        integrated with Pyomo, and allows modeling uncertainty sets with
+        Pyomo constraints.
+    \end{exampleblock}
+    }
+    \tiny
+    [1] \cite{Goh2011},
+    [2] \cite{Chen2020},
+    [3] \cite{pyros},
+    [4] \cite{Vayanos2020},
+    [5] \cite{Dunning2016}
+\end{frame}
+
+\begin{frame}{New modeling objects}
+    ROmodel introduces three new modeling components:
+    \begin{itemize}
+        \visible<2->{
+        \item \lstinline{UncParam}: Similar to Pyomo's \lstinline{Var} or
+            \lstinline{Param}; used to model uncertain parameters
+        }\visible<3->{
+        \item \lstinline{UncSet}: Based on Pyomo's \lstinline{Block} component;
+            used to model uncertainty sets
+        }\visible<4->{
+        \item \lstinline{AdjustableVar}: Very similar to Pyomo's
+            \lstinline{Var}; used for "wait and see" variables
+        }
+    \end{itemize}
+    \visible<5->{
+    These components can be used in Pyomo models like any Pyomo modeling
+    component.  }
+\end{frame}
+
+\begin{frame}[fragile]{Modeling uncertain parameters}
+    Uncertain parameters are the central component of robust optimization
+    problems:
+\begin{lstlisting}[language=Python]
+    import pyomo.environ as pe
+    import romodel as ro
+    # Construct model
+    m = pe.ConcreteModel()
+    # Add uncertain parameters
+    m.c = ro.UncParam(range(3), nominal=[0.1, 0.2, 0.3], uncset=m.U)
+\end{lstlisting}
+\visible<2->{
+Arguments:
+\begin{itemize}
+    \item \lstinline{index}: (optional), \lstinline{UncParam} can be indexed or
+        not
+    \item \lstinline{nominal}: specifies nominal values for the uncertain
+        parameters
+    \item \lstinline{uncset}: specifies an uncertainty set for the uncertain
+        parameters
+\end{itemize}
+}
+\end{frame}
+
+\begin{frame}[fragile]{Modeling uncertainty sets}
+    Uncertainty sets can be specified in two ways:
+    \begin{enumerate}
+        \item Generic sets with Pyomo constraints
+\begin{lstlisting}[language=Python]
+    # Define uncertainty set & uncertain parameters
+    m.U = ro.UncSet()
+    m.c = UncParam(range(2), uncset=m.U, nominal=[0.5, 0.5])
+    # Add constraints to uncertainty set
+    m.U.cons1 = Constraint(expr=m.c[0] + m.c[1] <= 1)
+    m.U.cons2 = Constraint(expr=m.c[0] - m.c[1] <= 1)
+\end{lstlisting}
+        \item Library sets
+\begin{lstlisting}[language=Python]
+    # Define polyhedral set
+    m.U = ro.uncset.PolyhedralSet(rhs=[1, 1, 1, 1], mat=[[ 1,  1],
+                                                         [ 1, -1],
+                                                         [-1,  1],
+                                                         [-1, -1]])
+\end{lstlisting}
+    \end{enumerate}
+% \begin{lstlisting}[language=Python]
+%     # Define ellipsoidal set
+%     m.U = ro.uncset.EllipsoidalSet(cov=[[1, 0, 0],
+%                               [0, 1, 0],
+%                               [0, 0, 1]],
+%                          mean=[0.5, 0.3, 0.1])
+% \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Modeling uncertain constraints}
+    Users can model uncertain constraints implicitly by using
+    \lstinline{UncParam} objects in Pyomo constraints.
+
+    Consider a deterministic Pyomo constraint:
+\begin{lstlisting}[language=Python]
+    # deterministic
+    m.x = Var(range(3))
+    c = [0.1, 0.2, 0.3]
+    m.cons = Constraint(expr=sum(c[i]*m.x[i] for i in m.x) <= 0)
+\end{lstlisting}
+    If \lstinline{c} is uncertain, the robust formulation is:
+\begin{lstlisting}[language=Python]
+    # robust
+    m.x = Var(range(3))
+    m.c = UncParam(range(3), nominal=[0.1, 0.2, 0.3], uncset=m.U)
+    m.cons = Constraint(expr=sum(m.c[i]*m.x[i] for i in m.x) <= 0)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Modeling adjustable variables}
+    Adjustable variable: Decision variable who's value is determined after the
+    uncertainty has been revealed.
+
+    Defining adjustable variables in ROmodel with the \lstinline{AdjustableVar}
+    class:
+\begin{lstlisting}[language=Python]
+    # Define uncertain parameters and adjustable variables
+    m.w = UncParam(range(3), nominal=[1, 2, 3], uncset=m.U)
+    m.y = AdjustableVar(range(3), uncparams=[m.w], bounds=(0, 1))
+\end{lstlisting}
+    Arguments \lstinline{uncparams} specifies which uncertain parameters are
+    revealed before the decision is made. This can be set individually for each
+    adjustable variable:
+\begin{lstlisting}[language=Python]
+    # Set uncertain parameters for individual indicies
+    m.y[0].set_uncparams([m.w[0]])
+    m.y[1].set_uncparams([m.w[0], m.w[1]])
+\end{lstlisting}
+    ROmodel currently only implements linear decision rules.
+\end{frame}
+
+\begin{frame}[fragile]{Solvers}
+ROmodel includes three solvers:
+\begin{enumerate}
+    \item Robust reformulation:
+\begin{lstlisting}[language=Python]
+    solver = SolverFactory('romodel.reformulation')
+\end{lstlisting}
+    \item Cutting planes:
+\begin{lstlisting}[language=Python]
+    solver = SolverFactory('romodel.cuts')
+\end{lstlisting}
+    \item Nominal:
+\begin{lstlisting}[language=Python]
+    solver = SolverFactory('romodel.nominal')
+\end{lstlisting}
+\end{enumerate}
+\begin{lstlisting}[language=Python]
+    # Set master & sub solver
+    solver.options['solver'] = 'gurobi'
+    solver.options['subsolver'] = 'ipopt'
+    # Solve
+    solver.solve(m)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Solvers: reformulation}
+    \centering
+    % \includegraphics[width=0.7\linewidth]{img/reform}
+    \tikzsetnextfilename{reform}
+    \input{img/reform.tex}
+\end{frame}
+
+\begin{frame}{Solvers: cutting planes}
+    \centering
+    %\includegraphics[width=0.7\linewidth]{img/cuts}
+    \tikzsetnextfilename{cuts}
+    \input{img/cuts}
+\end{frame}
+
+
+\begin{frame}{Extending ROmodel}
+    ROmodel can be extended in a number of ways:
+    \begin{enumerate}
+        \item Implementing new library uncertainty set
+        \item Adding new reformulations
+    \end{enumerate}
+
+    \visible<2->{
+    \begin{exampleblock}{Gaussian process-based uncertainty sets}
+        Gaussian processes are often used as surrogates for uncertain black-box
+        constraints. We have developed reformulation approaches for
+        chance constraints based on (warped) Gaussian processes [1].
+    \end{exampleblock}
+    \small
+    [1] \cite{Wiebe2020}
+}
+\end{frame}
+
+\begin{frame}[fragile]{Extending ROmodel: adding library sets}
+    Class which collects relevant data:
+\begin{lstlisting}[language=Python]
+    class EllipsoidalSet(UncSet):
+        '''
+        Defines an ellipsoidal uncertainty set of shape:
+            (param - mu)^T * A * (param - mu) <= 1
+        '''
+        def __init__(self, mean, cov, *args, **kwargs):
+            self.mean = mean
+            self.cov = cov
+            super().__init__(*args, **kwargs)
+\end{lstlisting}
+    Make compatible with cutting planes:
+\begin{lstlisting}[language=Python]
+    def generate_cons_from_lib(self, param):
+        raise NotImplementedError
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Extending ROmodel: adding reformulations}
+\begin{lstlisting}[language=Python]
+    def _reformulate(self, c, param, uncset, counterpart):
+        """
+        Reformulate an uncertain constraint or objective
+            c: Constraint or Objective
+            param: UncParam
+            uncset: UncSet
+            counterpart: Block
+        """
+        return counterpart
+\end{lstlisting}
+Make compatible with generic uncertainty sets (\lstinline{UncSet}): \begin{lstlisting}[language=Python]
+    def _check_applicability(self, uncset):
+        """
+        Returns `True` if the reformulation is applicable to `uncset`
+        """
+        return uncset.__class__ == GPSet
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Extending ROmodel: Gaussian process-based sets}
+    Train (warped) Gaussian process with GPy:
+    \begin{lstlisting}[language=Python]
+    import GPy
+    # Set up kernel
+    kernel = GPy.kern.RBF(input_dim=1)
+    # Set up GP and train
+    gp = GPy.models.WarpedGP(x, y, kernel=kernel, warping_terms=3)
+    gp.optimize()
+    \end{lstlisting}
+    Use GPy model to construct uncertainty set:
+    \begin{lstlisting}[language=Python]
+    from romodel.uncset import WarpedGPSet
+    m.z = pe.Var(range(3), within=pe.NonNegativeReals)
+    # Set up GP-based uncertainty set
+    m.uncset = WarpedGPSet(gp, m.z, 0.95)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{Case studies}
+    \begin{enumerate}
+        \item Portolio optimization with uncertain returns [1],
+        \item Knapsack problem with uncertain item weights,
+        \item Pooling problem instance with uncertain product demands [2],
+        \item Capacitated facility location problem with uncertain demand,
+        \item Production planning problem with prices dependent on uncertain
+            black-box function [3],
+        \item Drill scheduling problem with uncertain degradation rate
+            dependent on black-box function [3]
+    \end{enumerate}
+    \small
+    [1] \cite{Bertsimas2004}, [2] \cite{adhya}, [3] \cite{Wiebe2020}
+\end{frame}
+\begin{frame}{Results: median times}
+    \small
+    \centering
+\begin{tabular}{l l c c c}
+                               &             & Reformulation    & Cuts & Overall \\ \hline
+    \multirow{2}{*}{Knapsack}  & Polyhedral  & \phantom{601}54  & \phantom{40}272 & \phantom{753}85      \\
+                               \cline{2-5}
+                               & Ellipsoidal & \phantom{601}50  & \phantom{40}183 & \phantom{753}91      \\
+%                                \cline{2-5}
+%                                & Overall     & 68            & 252  & 84      \\
+    \hline
+    \multirow{2}{*}{Pooling}   & Polyhedral  & \phantom{601}74  & \phantom{40}329 & \phantom{75}173     \\
+                               \cline{2-5}
+                               & Ellipsoidal & \phantom{60}638  & \phantom{40}331 & \phantom{75}349    \\
+%                                \cline{2-5}
+%                                & Overall     & 123           & 487  & 483     \\
+    \hline
+    \multirow{2}{*}{Portfolio} & Polyhedral  & \phantom{601}50  & \phantom{40}276 & \phantom{75}126      \\
+                               \cline{2-5}
+                               & Ellipsoidal & \phantom{601}49  & \phantom{4}1659 & \phantom{75}129      \\
+%                                \cline{2-5}
+%                                & Overall     & 68            & 514  & 85      \\
+    \hline
+    \multirow{2}{*}{Facility}  & Polyhedral  & \phantom{60}261  & 13353           & \phantom{7}5588\\
+                               \cline{2-5}
+                               & Ellipsoidal & \phantom{601}--  & 31275           & 31275\\
+    \hline
+    \multirow{2}{*}{Planning}  & Standard    & \phantom{6}2776  & \phantom{400}NA & \phantom{7}2776\\
+                               \cline{2-5}
+                               & Warped      & \phantom{6}8536  & \phantom{400}NA & \phantom{7}8536\\
+    \hline
+    \multirow{2}{*}{Drilling}  & Standard    & 13646            & \phantom{400}NA & 13646 \\
+                               \cline{2-5}
+                               & Warped      & 75325            & \phantom{400}NA & 75325\\
+    \hline
+                        Overall&             & \phantom{601}74  & \phantom{40}330 & \phantom{75}271     \\
+    \hline
+\end{tabular}
+\end{frame}
+
+\begin{frame}{Results: price of robustness}
+    \centering
+    % \includegraphics[width=0.8\textwidth]{img/results.pdf}
+    \tikzsetnextfilename{results}
+    \input{img/results}
+\end{frame}
+
+
+% Conclusion and thanks
+\begin{frame}[noframenumbering,plain]
+    \tikzexternaldisable
+    \begin{tikzpicture}[remember picture,overlay]
+        \node (icl) [anchor=north west,
+                     xshift=7pt,
+                     yshift=-6pt]
+            at (current page.north west)
+            {\includegraphics[width=0.29\textwidth]{img/logo_imperial.eps}};
+        \node (cog)[anchor=north east, %anchor is upper left corner of the graphic
+                    xshift=-220pt, %shifting around
+                    yshift=-4pt]
+            at (current page.north east) %left upper corner of the page
+            {\includegraphics[width=0.23\textwidth]{img/logo_cog.png}};
+        \node (hipeds) [anchor=north east, %anchor is upper left corner of the graphic
+                        xshift=-113pt, %shifting around
+                        yshift=-10pt]
+            at (current page.north east) %left upper corner of the page
+            {\includegraphics[width=0.23\textwidth]{img/logo_hipeds.pdf}};
+        \node (slb) [anchor=north east, %anchor is upper left corner of the graphic
+                     xshift=-4pt, %shifting around
+                     yshift=-10pt]
+            at (current page.north east) %left upper corner of the page
+            {\includegraphics[width=0.23\textwidth]{img/logo_slb.eps}};
+    \end{tikzpicture}
+    \vspace{3em}
+
+    ROmodel...
+    \begin{itemize}
+        \item ...makes modeling \& solving robust problems with Pyomo
+            intuitive.
+        \item ...makes it easy to compare different uncertainty sets \&
+            solution approaches.
+        \item ...is open source and can be extended to other uncertainty
+            sets \& reformulations.
+    \end{itemize}
+    \vspace{-1em}
+    \centering
+    \LARGE
+    Thank you!\\[1em]
+    \normalsize
+    Try ROmodel: {\color{imperialDarkBlue}https://github.com/cog-imperial/romodel}\\
+    Paper: {\color{imperialDarkBlue}https://arxiv.org/abs/2105.08598}\\
+    Twitter: {\color{icOrange}@CogImperial}\\[2em]
+    \tiny
+    Funding: EP/L016796/1, EP/R511961/1 no. 17000145, and EP/P016871/1
+\end{frame}
+
+
+
+
+\appendix
+\begin{frame}[allowframebreaks]
+    \tiny
+    \bibliographystyle{apalike}
+    \bibliography{lit}
+\end{frame}
+
+\end{document}

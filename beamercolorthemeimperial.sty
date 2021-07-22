@@ -1,0 +1,90 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%% Imperial Colour Theme %%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%% Version: 0.1 %%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Usage: \usecolortheme{imperial} % Assuming this file is in 
+%								  % the same directory
+%    or: \usepackage{<path-to-directory-with-theme>/beamercolorthemeimperial}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This is still a work in progress, let me know if something 
+% doesn't look right by emailing: miten.mistry11@imperial.ac.uk
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Happy presenting!
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%% Colour Definitions %%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\definecolor{impDarkBlue}{RGB}{0,52,92}
+\definecolor{impLightBlue}{RGB}{103,124,157}
+
+% \definecolor{imperialExampleText}{RGB}{2,128,2}
+\definecolor{imperialExampleText}{RGB}{102,164,10}
+\definecolor{imperialExampleBlock}{RGB}{231,243,231}
+\definecolor{imperialExampleTitleBG}{RGB}{205,231,205}
+
+\definecolor{imperialDarkDarkBlue}{HTML}{01284E}
+\definecolor{imperialDarkerBlue}{HTML}{2A435B}
+\definecolor{imperialDarkBlue}{HTML}{013F7A}
+\definecolor{imperialMidDarkBlue}{HTML}{20558A}
+\definecolor{imperialMidBlue}{HTML}{3F6B99}
+\definecolor{imperialLightBlue}{HTML}{7D97B8}
+\definecolor{imperialLighterBlue}{HTML}{DCE3EC}
+
+\definecolor{imperialAlertText}{HTML}{D24000}
+\definecolor{imperialAlertBlock}{HTML}{FEE7E7}
+\definecolor{imperialAlertTitleBG}{HTML}{FECCCD}
+
+
+
+\definecolor{imperialBlockTitleBG}{HTML}{B9C7D9}
+\definecolor{mbg}{RGB}{250,250,250}
+\definecolor{icOrange}{rgb}{0.82,0.25,0}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%% Beamer Colours %%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\setbeamercolor*{structure}{fg=impDarkBlue}
+
+\setbeamercolor*{alerted text}{fg=imperialAlertText}
+\setbeamercolor*{example text}{fg=imperialExampleText}
+
+% Colour palettes
+\setbeamercolor*{palette primary}{use=structure,fg=white,bg=impLightBlue}
+\setbeamercolor*{palette secondary}{use=structure,fg=white,bg=impDarkBlue!50!impLightBlue}
+\setbeamercolor*{palette tertiary}{use=structure,fg=white,bg=impDarkBlue}
+\setbeamercolor*{palette quaternary}{use=structure,fg=white,bg=imperialDarkDarkBlue}
+
+\setbeamercolor*{palette sidebar primary}{use=structure,fg=white,bg=imperialLightBlue}
+\setbeamercolor*{palette sidebar secondary}{use=structure,fg=white,bg=imperialMidBlue}
+\setbeamercolor*{palette sidebar tertiary}{use=structure,fg=white,bg=imperialDarkBlue}
+\setbeamercolor*{palette sidebar quaternary}{use=structure,fg=white,bg=imperialDarkDarkBlue}
+
+\setbeamercolor*{block title}{use={structure}, bg=structure.fg!32, fg=structure.fg}
+\setbeamercolor*{block body}{use=structure,bg=impLightBlue!20}
+
+\setbeamercolor*{block title alerted}{bg=imperialAlertText!32, fg=imperialAlertText}
+\setbeamercolor*{block body alerted}{bg=imperialAlertText!20}
+
+\setbeamercolor*{block title example}{bg=imperialExampleText!32, fg=imperialExampleText}
+\setbeamercolor*{block body example}{bg=imperialExampleText!20}
+
+
+\setbeamercolor*{titlelike}{parent={structure}}
+
+\setbeamercolor*{title}{parent={titlelike}}
+\setbeamercolor*{subtitle}{fg=impDarkBlue!40!impLightBlue}
+
+\setbeamercolor*{frametitle}{parent=title}
+\setbeamercolor*{framesubtitle}{parent=subtitle}
+% \setbeamercolor*{item}{fg=imperialDarkBlue}
+
+\setbeamercolor*{subsection in head/foot}{bg=mbg, fg=black}

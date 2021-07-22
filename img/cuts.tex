@@ -1,0 +1,56 @@
+\begin{tikzpicture}
+    \definecolor{00BFC4}{RGB}{0,191,196}
+    \definecolor{C77CFF}{RGB}{199,124,255}
+    \definecolor{F8766D}{RGB}{248,118,109}
+    \definecolor{7CAE00}{RGB}{124,174,0}
+    \tikzstyle{document} = [rectangle, draw,
+                            fill=blue!30,
+                            text width=4.7em,
+                            text centered,
+                            node distance=1.0cm,]   
+    \tikzstyle{block1} = [rectangle,
+                          draw,
+                          fill=00BFC4!30,
+                          text centered,
+                          rounded corners,
+                          node distance=0.8cm,
+                          minimum height=1.5em]
+    \tikzstyle{block} = [trapezium,
+                         draw,
+                         fill=7CAE00!30,
+                         text centered,
+                         node distance=0.5cm,
+                         text width=1.5cm,
+                         %rounded corners,
+                         minimum height=1.5em]
+    \tikzstyle{line} = [draw, -latex']
+    \tikzstyle{cloud} = [draw,
+                         ellipse,
+                         fill=F8766D!30,
+                         node distance=0.2cm,
+                         minimum height=2em]  
+    \tikzstyle{ioi} = [trapezium,draw,trapezium right angle=120,
+                       rounded corners, fill=blue!60,
+                       minimum height=2.7em]  
+    \tikzstyle{io} = [trapezium,draw,trapezium right angle=110,
+                      rounded corners,fill=red!20,
+                      node distance=0.2cm,
+                      minimum height=2.9em]   % the draw command here is used to draw the boundary of mentioned shape.  
+
+    \node [cloud] (init) {\small Robust model};
+    \node [block1, below = of init,text width=8em](replace){\small Replace uncertain constraints by
+        cut generators};
+    \node [block1,right = of replace](master){\small Solve master problem};
+    \node [block1,right = of master](cut){\small Add cut};
+    \node [block,right = 1.22cm of init](feasible){\small Solution robustly feasible?};
+    \node [cloud,right = of has_unc,] (sol) {\small Robust solution};
+
+    \path [line] (init) -- (replace);
+    \path [line] (replace) to (master);
+    \path [line] (cut) to (master);
+    \path [line] (master.north) to [bend left] (feasible.south west);
+    \path [line] (feasible.east) to [bend left] node
+        [midway,label=right:{no},xshift=0.6cm,yshift=-0.6cm] {} (cut);
+    \path [line] (feasible) to node [midway,label=above:{yes},yshift=-0.1cm] {} (sol);
+
+\end{tikzpicture}
