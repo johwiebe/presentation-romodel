@@ -1,1 +1,1 @@
-$pdflatex = 'lualatex --shell-escape'
+$pdflatex = 'pdflatex --shell-escape'
